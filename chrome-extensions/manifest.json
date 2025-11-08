@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Professional Manga Translator",
+  "version": "2.0",
+  "description": "Advanced translation with text overlay for manga and images",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "contextMenus",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Manga Translator Pro"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["overlay.css"]
+    }
+  ],
+  "web_accessible_resources": [{
+    "resources": ["overlay.css"],
+    "matches": ["<all_urls>"]
+  }
+}
