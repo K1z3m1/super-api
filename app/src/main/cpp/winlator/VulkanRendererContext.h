@@ -1,0 +1,470 @@
+#pragma once
+#include <vulkan/vulkan.h>
+#include <list>
+#include <vulkan/vulkan_android.h>
+struct VkTable {
+
+    PFN_vkCreateInstance CreateInstance;
+
+    PFN_vkDestroyInstance DestroyInstance;
+    PFN_vkEnumeratePhysicalDevices EnumeratePhysicalDevices;
+    PFN_vkGetPhysicalDeviceProperties GetPhysicalDeviceProperties;
+    PFN_vkGetPhysicalDeviceMemoryProperties GetPhysicalDeviceMemoryProperties;
+    PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR GetPhysicalDeviceSurfaceCapabilitiesKHR;
+    PFN_vkGetPhysicalDeviceSurfaceFormatsKHR GetPhysicalDeviceSurfaceFormatsKHR;
+    PFN_vkGetPhysicalDeviceSurfacePresentModesKHR GetPhysicalDeviceSurfacePresentModesKHR;
+    PFN_vkGetPhysicalDeviceQueueFamilyProperties GetPhysicalDeviceQueueFamilyProperties;
+    PFN_vkGetPhysicalDeviceSurfaceSupportKHR GetPhysicalDeviceSurfaceSupportKHR;
+    PFN_vkCreateDevice CreateDevice;
+    PFN_vkDestroySurfaceKHR DestroySurfaceKHR;
+    PFN_vkCreateAndroidSurfaceKHR CreateAndroidSurfaceKHR;
+
+    PFN_vkGetDeviceProcAddr GetDeviceProcAddr;
+    PFN_vkDestroyDevice DestroyDevice;
+    PFN_vkGetDeviceQueue GetDeviceQueue;
+    PFN_vkDeviceWaitIdle DeviceWaitIdle;
+    PFN_vkCreateSwapchainKHR CreateSwapchainKHR;
+    PFN_vkDestroySwapchainKHR DestroySwapchainKHR;
+    PFN_vkGetSwapchainImagesKHR GetSwapchainImagesKHR;
+    PFN_vkAcquireNextImageKHR AcquireNextImageKHR;
+    PFN_vkQueuePresentKHR QueuePresentKHR;
+    PFN_vkQueueSubmit QueueSubmit;
+    PFN_vkCreateRenderPass CreateRenderPass;
+    PFN_vkDestroyRenderPass DestroyRenderPass;
+    PFN_vkCreateFramebuffer CreateFramebuffer;
+    PFN_vkDestroyFramebuffer DestroyFramebuffer;
+    PFN_vkCreateImageView CreateImageView;
+    PFN_vkDestroyImageView DestroyImageView;
+    PFN_vkCreateImage CreateImage;
+    PFN_vkDestroyImage DestroyImage;
+    PFN_vkCreateBuffer CreateBuffer;
+    PFN_vkDestroyBuffer DestroyBuffer;
+    PFN_vkAllocateMemory AllocateMemory;
+    PFN_vkFreeMemory FreeMemory;
+    PFN_vkMapMemory MapMemory;
+    PFN_vkFlushMappedMemoryRanges FlushMappedMemoryRanges;
+    PFN_vkBindBufferMemory BindBufferMemory;
+    PFN_vkBindImageMemory BindImageMemory;
+    PFN_vkGetBufferMemoryRequirements GetBufferMemoryRequirements;
+    PFN_vkGetImageMemoryRequirements GetImageMemoryRequirements;
+    PFN_vkCreateDescriptorSetLayout CreateDescriptorSetLayout;
+    PFN_vkDestroyDescriptorSetLayout DestroyDescriptorSetLayout;
+    PFN_vkCreateDescriptorPool CreateDescriptorPool;
+    PFN_vkDestroyDescriptorPool DestroyDescriptorPool;
+    PFN_vkAllocateDescriptorSets AllocateDescriptorSets;
+    PFN_vkFreeDescriptorSets FreeDescriptorSets;
+    PFN_vkUpdateDescriptorSets UpdateDescriptorSets;
+    PFN_vkCreatePipelineLayout CreatePipelineLayout;
+    PFN_vkDestroyPipelineLayout DestroyPipelineLayout;
+    PFN_vkCreateShaderModule CreateShaderModule;
+    PFN_vkDestroyShaderModule DestroyShaderModule;
+    PFN_vkCreateGraphicsPipelines CreateGraphicsPipelines;
+    PFN_vkCreateComputePipelines CreateComputePipelines;
+    PFN_vkDestroyPipeline DestroyPipeline;
+    PFN_vkCreateCommandPool CreateCommandPool;
+    PFN_vkDestroyCommandPool DestroyCommandPool;
+    PFN_vkAllocateCommandBuffers AllocateCommandBuffers;
+    PFN_vkFreeCommandBuffers FreeCommandBuffers;
+    PFN_vkBeginCommandBuffer BeginCommandBuffer;
+    PFN_vkEndCommandBuffer EndCommandBuffer;
+    PFN_vkResetCommandBuffer ResetCommandBuffer;
+    PFN_vkCmdBeginRenderPass CmdBeginRenderPass;
+    PFN_vkCmdEndRenderPass CmdEndRenderPass;
+    PFN_vkCmdBindPipeline CmdBindPipeline;
+    PFN_vkCmdBindDescriptorSets CmdBindDescriptorSets;
+    PFN_vkCmdDraw CmdDraw;
+    PFN_vkCmdDispatch CmdDispatch;
+    PFN_vkCmdPushConstants CmdPushConstants;
+    PFN_vkCmdSetViewport CmdSetViewport;
+    PFN_vkCmdSetScissor CmdSetScissor;
+    PFN_vkCmdPipelineBarrier CmdPipelineBarrier;
+    PFN_vkCmdCopyImage CmdCopyImage;
+    PFN_vkCmdCopyBufferToImage CmdCopyBufferToImage;
+    PFN_vkCreateSampler CreateSampler;
+    PFN_vkDestroySampler DestroySampler;
+    PFN_vkCreateSemaphore CreateSemaphore;
+    PFN_vkDestroySemaphore DestroySemaphore;
+    PFN_vkCreateFence CreateFence;
+    PFN_vkDestroyFence DestroyFence;
+    PFN_vkWaitForFences WaitForFences;
+    PFN_vkResetFences ResetFences;
+    PFN_vkGetFenceStatus GetFenceStatus;
+
+    PFN_vkGetAndroidHardwareBufferPropertiesANDROID GetAndroidHardwareBufferPropertiesANDROID;
+};
+
+#include <android/log.h>
+#include <string>
+#define WLOG_TAG "Winlator_Renderer"
+#define RLOG(...) if(verboseLog) __android_log_print(ANDROID_LOG_DEBUG,WLOG_TAG,__VA_ARGS__)
+#define RLOG_E(...) __android_log_print(ANDROID_LOG_ERROR,WLOG_TAG,__VA_ARGS__)
+#define SCANOUT_LOG(...) __android_log_print(ANDROID_LOG_DEBUG,"Winlator_Scanout",__VA_ARGS__)
+
+#include <vulkan/vulkan_android.h>
+#include <android/hardware_buffer.h>
+#include <android/native_window.h>
+#include <vector>
+#include <unordered_map>
+#include <thread>
+#include <atomic>
+#include <mutex>
+#include <shared_mutex>
+#include <condition_variable>
+
+static constexpr uint32_t MAX_FRAMES_IN_FLIGHT = 2;
+
+struct WindowPushConstants      { float ndcX0, ndcY0, ndcX1, ndcY1; int useTexAlpha; };
+struct WindowPushConstantsSGSR  { float ndcX0, ndcY0, ndcX1, ndcY1; int useTexAlpha;
+                                  float invSrcW, invSrcH, srcW, srcH;
+                                  int   effectId;   
+                                  float resW;       
+                                  float sharpness; };
+struct WindowPushConstantsNis   { float ndcX0, ndcY0, ndcX1, ndcY1;
+                                  float invSrcW, invSrcH, srcW, srcH;
+                                  float sharpness; };
+struct WindowPushConstantsStretch { float ndcX0, ndcY0, ndcX1, ndcY1; int useTexAlpha; float strength; float profile; };
+
+struct WindowPushConstantsPostFX  { float ndcX0, ndcY0, ndcX1, ndcY1;
+                                    int   effectId;   
+                                    float sharpness;
+                                    float resW, resH; };
+
+class VulkanRendererContext {
+public:
+    VulkanRendererContext(ANativeWindow* window, int cWidth, int cHeight, void* adrenotoolsHandle = nullptr);
+    ~VulkanRendererContext();
+
+    void onSurfaceResized(int width, int height);
+    void setTransform(float ox, float oy, float sx, float sy);
+    void updatePointerPosition(short x, short y);
+    void updateWindowContent(int64_t id, void* pixels, short w, short h, short stride, int x, int y);
+    void updateWindowContentAHB(int64_t id, AHardwareBuffer* ahb, short w, short h, int x, int y);
+    void updateCursorImage(void* pixels, short w, short h, short hotX, short hotY);
+    void setCursorVisible(bool visible);
+    void setRenderList(const int64_t* ids, const int* xs, const int* ys, int count);
+    void removeWindow(int64_t id);
+    void clearBackbuffer() {}
+    void beginBatch() {}
+    void endBatch() {}
+    void initScanout();
+    void destroyScanout();
+    void applyScanoutBuffer();
+    void initScanoutFromWindows(ANativeWindow* gameWin, ANativeWindow* cursorWin);
+    void scanoutSetDst(int x, int y, int w, int h);
+    void scanoutSetBuffer(AHardwareBuffer* ahb, int x, int y, int w, int h, int fenceFd = -1);
+    void scanoutSetCursorImage(void* pixels, short w, short h, short stride);
+    void scanoutSetCursorPos(short x, short y, short hotX, short hotY);
+    std::atomic<bool> scanoutActive{false};
+    std::atomic<bool> gameFrameDelivered{false};
+    std::atomic<bool> surfaceDetached{false};
+
+    void detachSurface();
+    bool reattachSurface(ANativeWindow* newWindow);
+
+    bool verboseLog = true;
+    void setVerboseLog(bool v) { verboseLog = v; }
+    void dumpRendererInfo();
+
+    std::string adrenoDriverPath;
+    std::string adrenoDriverName;
+    std::string adrenoNativeLibDir;
+    void* vulkanHandle = nullptr;
+    std::atomic<bool> scanoutBlackFrameDone{false};
+    PFN_vkGetInstanceProcAddr gipa = nullptr;
+    VkTable vk_ = {};
+    void loadCustomDriver();
+    void loadInstanceDispatch();
+    void loadDeviceDispatch();
+
+    void setFilterMode(int mode);
+    void setStretchMode(int mode);
+    void setPostFXMode(int mode);    
+    void setSharpness(float s);      
+    void setSwapRB(bool enabled);
+    void setPresentMode(VkPresentModeKHR mode);
+    void setFrameGenerationMultiplier(int multiplier);
+    void setFrameGenerationSmoothing(float smoothing);
+    int getFrameGenerationMultiplier() const { return frameGenMultiplier.load(); }
+    std::vector<int> getSupportedPresentModes() const;
+    VkExtent2D getSwapchainExtent() const { return swapchainExt; }
+
+    void setCustomScissor(int x, int y, int w, int h);
+    void clearCustomScissor();
+
+private:
+    struct FrameGenImage {
+        VkImage image = VK_NULL_HANDLE;
+        VkDeviceMemory memory = VK_NULL_HANDLE;
+        VkImageView view = VK_NULL_HANDLE;
+        VkFramebuffer framebuffer = VK_NULL_HANDLE;
+    };
+
+    struct FrameGenMotionPush {
+        int32_t mvW, mvH;
+        float invMvW, invMvH;
+        float mvScale, minStep, pad1, pad2;
+    };
+
+    struct FrameGenInterpPush {
+        float width, height;
+        float phase, occlusionLo, occlusionHi, smoothing;
+    };
+
+    struct WinTex {
+        VkImage              img            = VK_NULL_HANDLE;
+        VkDeviceMemory       mem            = VK_NULL_HANDLE;
+        VkImageView          view           = VK_NULL_HANDLE;
+        VkDescriptorSet      ds             = VK_NULL_HANDLE;
+        VkBuffer             stg            = VK_NULL_HANDLE;
+        VkDeviceMemory       stgMem         = VK_NULL_HANDLE;
+        void*                mapped         = nullptr;
+        VkDeviceSize         cap            = 0;
+        int                  w              = 0;
+        int                  h              = 0;
+        bool                 dirty          = false;
+        bool                 isAHB          = false;
+        bool                 needsTransition = false;
+        AHardwareBuffer*     ahb            = nullptr;
+    };
+
+    struct RenderEntry { int64_t id; int x, y; };
+    struct DrawEntry {
+        VkImage         img            = VK_NULL_HANDLE;
+        VkDescriptorSet ds             = VK_NULL_HANDLE;
+        VkBuffer        upload         = VK_NULL_HANDLE;
+        int             x=0, y=0, w=0, h=0;
+        bool            needsTransition = false;
+        bool            isAHB          = false;
+    };
+
+    ANativeWindow* window;
+    int surfaceWidth, surfaceHeight, containerWidth, containerHeight;
+    void* adrenotoolsHandle = nullptr;
+    int filterMode  = 0;
+    int stretchMode = 0;
+    int postFXMode  = 0;  
+    float stretchStrength = 0.40f;
+    float stretchProfile  = 0.60f;
+    float sharpness = 0.5f;
+    bool swapRB = false;
+    float maxAnisotropy           = 1.0f;
+    VkPhysicalDeviceMemoryProperties memProperties{};
+    VkPresentModeKHR requestedPresentMode = VK_PRESENT_MODE_FIFO_KHR;
+    uint32_t graphicsQueueFamilyIndex = 0;
+    std::vector<VkPresentModeKHR> availablePresentModes;
+
+    std::unordered_map<int64_t, WinTex>         texMap;
+
+    std::unordered_map<AHardwareBuffer*, WinTex>              ahbImportCache;
+    std::unordered_map<int64_t, std::vector<AHardwareBuffer*>> windowAhbs;
+
+    std::vector<WinTex>    deleteQueue;
+    std::vector<RenderEntry> renderList;
+
+    std::vector<DrawEntry>             frameDraws;
+    std::vector<VkImageMemoryBarrier>  frameAhbTransitions;
+    std::vector<VkImageMemoryBarrier>  framePreUpload;
+    std::vector<VkImageMemoryBarrier>  framePostUpload;
+
+    void*  scanoutGameSC      = nullptr;
+    void*  scanoutCursorSC    = nullptr;
+    void*  scanoutCursorBuf   = nullptr;
+    int32_t scanoutCursorBufW = 0;
+    int32_t scanoutCursorBufH = 0;
+
+    void*  scanoutTx          = nullptr;
+    void*  scanoutGameTx      = nullptr;
+
+    ARect  scanoutLastSrc{}, scanoutLastDst{};
+    bool   scanoutGeoDirty    = true;
+    bool   scanoutVisShown    = false;
+    bool   scanoutApiLoaded   = false;
+    void*  fnSCCreateFromWin  = nullptr;
+    void*  fnSCRelease        = nullptr;
+    void*  fnSTCreate         = nullptr;
+    void*  fnSTDelete         = nullptr;
+    void*  fnSTApply          = nullptr;
+    void*  fnSTSetBuffer      = nullptr;
+    void*  fnSTSetZOrder      = nullptr;
+    void*  fnSTSetVisibility  = nullptr;
+    void*  fnSTSetGeometry    = nullptr;
+    void*  fnSTSetBackPressure = nullptr;
+    bool   loadScanoutApi();
+
+    int32_t scanoutDstX=0, scanoutDstY=0, scanoutDstW=0, scanoutDstH=0;
+
+    int32_t lastDstX=0, lastDstY=0, lastDstW=0, lastDstH=0;
+    bool    gameScVisible      = false;
+
+    struct ScanoutPending { AHardwareBuffer* ahb=nullptr; int x=0,y=0,w=0,h=0; int fenceFd=-1; };
+    std::mutex        scanoutMutex;
+    ScanoutPending    scanoutPending{};
+    std::atomic<bool> scanoutPendingDirty{false};
+
+    short  pendingCursorX=0, pendingCursorY=0, pendingCursorHotX=0, pendingCursorHotY=0;
+    bool   cursorPosDirty=false;
+    bool   cursorImageDirty=false;
+
+    std::atomic<int>  pointerX{0}, pointerY{0};
+    float sceneOffsetX=0.f, sceneOffsetY=0.f, sceneScaleX=1.f, sceneScaleY=1.f;
+
+    std::atomic<bool> cursorVisible{false};
+    short  cursorHotX=0, cursorHotY=0, cursorTexW=0, cursorTexH=0;
+    std::vector<uint32_t>  cursorPixels;
+    std::atomic<bool> isCursorImageDirty{false};
+    std::atomic<bool> cursorMoved{false};
+    std::atomic<bool> cursorImageInitialized{false};
+
+    VkImage         cursorImg   = VK_NULL_HANDLE;
+    VkDeviceMemory  cursorMem   = VK_NULL_HANDLE;
+    VkImageView     cursorView  = VK_NULL_HANDLE;
+    VkDescriptorSet  cursorDS   = VK_NULL_HANDLE;
+    VkBuffer         cursorStg  = VK_NULL_HANDLE;
+    VkDeviceMemory   cursorStgM = VK_NULL_HANDLE;
+    void*            cursorStgP = nullptr;
+    VkDeviceSize     cursorStgC = 0;
+    VkDeviceSize     cursorUploadSize = 0;
+
+    VkInstance       instance;
+    VkSurfaceKHR     surface;
+    VkPhysicalDevice physicalDevice;
+    VkDevice         device;
+    VkQueue          graphicsQueue;
+    VkSwapchainKHR   swapchain   = VK_NULL_HANDLE;
+    VkFormat         swapchainFmt;
+    VkExtent2D       swapchainExt;
+
+    std::vector<VkImage>       swapchainImages;
+    std::vector<VkImageView>   swapchainViews;
+    std::vector<VkFramebuffer> swapchainFBs;
+
+    VkRenderPass          renderPass  = VK_NULL_HANDLE;
+    VkDescriptorSetLayout dsLayout    = VK_NULL_HANDLE;
+    VkPipelineLayout      pipeLayout  = VK_NULL_HANDLE;
+
+    VkPipeline            pipeline       = VK_NULL_HANDLE;
+    VkPipeline            sgsrPipeline   = VK_NULL_HANDLE;
+    VkPipeline            nisPipeline    = VK_NULL_HANDLE;
+    VkPipeline            legacyUpscalePipeline = VK_NULL_HANDLE;
+    VkPipeline            stretchPipeline= VK_NULL_HANDLE;
+    VkPipeline            postfxPipeline = VK_NULL_HANDLE;
+
+    VkRenderPass          frameGenHistoryPass = VK_NULL_HANDLE;
+    VkDescriptorSetLayout frameGenMotionLayout = VK_NULL_HANDLE;
+    VkDescriptorSetLayout frameGenInterpLayout = VK_NULL_HANDLE;
+    VkPipelineLayout      frameGenMotionPipeLayout = VK_NULL_HANDLE;
+    VkPipelineLayout      frameGenInterpPipeLayout = VK_NULL_HANDLE;
+    VkPipeline            frameGenMotionPipeline = VK_NULL_HANDLE;
+    VkPipeline            frameGenInterpPipeline = VK_NULL_HANDLE;
+    VkSampler             frameGenSampler = VK_NULL_HANDLE;
+    FrameGenImage         frameGenHistory[2];
+    FrameGenImage         frameGenMotion;
+    VkDescriptorSet       frameGenMotionSets[2] = {VK_NULL_HANDLE, VK_NULL_HANDLE};
+    VkDescriptorSet       frameGenInterpSets[2] = {VK_NULL_HANDLE, VK_NULL_HANDLE};
+    VkCommandBuffer       frameGenStageCmd = VK_NULL_HANDLE;
+    VkFence               frameGenStageFence = VK_NULL_HANDLE;
+    std::atomic<int>      frameGenMultiplier{0};
+    std::atomic<float>    frameGenSmoothing{0.75f};
+    std::atomic<bool>     frameGenResetRequested{false};
+    std::atomic<bool>     frameGenContentDirty{true};
+    uint32_t              frameGenHistoryCurrent = 0;
+    uint32_t              frameGenHistoryCount = 0;
+    bool                  frameGenMotionValid = false;
+    bool                  frameGenResourcesBuilt = false;
+
+    VkCommandPool                cmdPool = VK_NULL_HANDLE;
+    std::vector<VkCommandBuffer> cmdBufs;
+
+    std::vector<VkSemaphore> imgAvailSems;
+    std::vector<VkSemaphore> renderDoneSems;
+    std::vector<VkFence>     inFlightFences;
+    std::vector<VkFence>     imgInFlight;
+    uint32_t                 currentFrame = 0;
+
+    VkSampler        sampler    = VK_NULL_HANDLE;
+    VkDescriptorPool winTexPool = VK_NULL_HANDLE;
+
+    std::atomic<bool> needsRender{false};
+    std::thread       renderThread;
+    std::atomic<bool> isRunning{false};
+    std::atomic<bool> fbResized{false};
+    std::mutex        renderMutex;
+    std::mutex        dirtyMutex;
+    std::condition_variable dirtyCV;
+    std::shared_mutex frameMutex;
+
+    VkRect2D          customScissor    = {{0,0},{0,0}};
+    bool              hasCustomScissor = false;
+
+    void createInstance();
+    void createSurface();
+    void pickPhysicalDevice();
+    void createLogicalDevice();
+    void createSwapchain();
+    void createRenderPass();
+    void createDSLayout();
+    void createPipeline(bool blend, VkPipeline& out);
+    void createSgsrPipeline();
+    void createNisPipeline();
+    void createLegacyUpscalePipeline();
+    void createStretchPipeline();
+    void createPostFXPipeline();
+    void createFrameGenPipelines();
+    bool createFrameGenResources();
+    void destroyFrameGenResources();
+    bool createFrameGenImage(FrameGenImage& image, uint32_t width, uint32_t height,
+                             VkFormat format, VkImageUsageFlags usage, bool framebuffer);
+    void createFramebuffers();
+    void createCmdPool();
+    void createSampler();
+    void createWinTexPool();
+    void createCursorPipeline();
+    void createCursorDS();
+    void createCmdBufs();
+    void createSyncObjects();
+    void cleanupSwapchain();
+
+    bool  createWinTexResources(WinTex& wt, int w, int h);
+    bool  importAHBToWinTex(WinTex& wt, AHardwareBuffer* ahb);
+    void  cleanupAllAHBCache();
+    void  flushDeleteQueue();
+    void  destroyWinTex(WinTex& wt);
+    void  ensureCursorTex(short w, short h);
+    void  cleanupCursorTex();
+    void  ensureCursorStaging(VkDeviceSize sz);
+
+    void recordCmdBuf(VkCommandBuffer cb, VkRenderPass targetRenderPass, VkFramebuffer targetFramebuffer,
+        const std::vector<DrawEntry>& draws,
+        std::vector<VkImageMemoryBarrier>& ahbTransitions,
+        std::vector<VkImageMemoryBarrier>& preUpload,
+        std::vector<VkImageMemoryBarrier>& postUpload,
+        VkBuffer cursorUpload, bool hasCursorUpload,
+        float ox, float oy, float sx, float sy, float cw, float ch,
+        short ptrX, short ptrY, short curHotX, short curHotY,
+        short curW, short curH, bool curVis,
+        VkRect2D scissorRect);
+    void renderLoop();
+    void renderFrame();
+    bool stageFrameGenHistory(const std::vector<DrawEntry>& draws,
+        VkBuffer cursorUpload, bool hasCursorUpload,
+        float ox, float oy, float sx, float sy, float cw, float ch,
+        short ptrX, short ptrY, short curHotX, short curHotY,
+        short curW, short curH, bool curVis, VkRect2D scissorRect);
+    bool presentFrameGenPhase(float phase, uint32_t pairCurrent,
+        VkBuffer cursorUpload, bool hasCursorUpload,
+        float ox, float oy, float sx, float sy, float cw, float ch,
+        short ptrX, short ptrY, short curHotX, short curHotY,
+        short curW, short curH, bool curVis, VkRect2D scissorRect);
+    void invalidateFrameGenHistory(bool contentDirty = true);
+
+    uint32_t        findMemType(uint32_t filter, VkMemoryPropertyFlags props);
+    void            createBuffer(VkDeviceSize sz, VkBufferUsageFlags usage,
+                                 VkMemoryPropertyFlags props, VkBuffer& buf, VkDeviceMemory& mem);
+    VkCommandBuffer beginOneTime();
+    void            endOneTime(VkCommandBuffer cmd);
+    void            transition(VkCommandBuffer cmd, VkImage img,
+                               VkImageLayout oldL, VkImageLayout newL,
+                               VkAccessFlags srcA, VkAccessFlags dstA,
+                               VkPipelineStageFlags srcS, VkPipelineStageFlags dstS);
+    VkShaderModule  makeShader(const uint32_t* code, size_t sz);
+};

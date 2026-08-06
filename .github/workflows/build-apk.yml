@@ -1,0 +1,124 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+# Avoid piling up redundant runs when pushing multiple commits quickly.
+concurrency:
+  group: build-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # This project pulls a Wine/Proton rootfs + native deps and builds a
+    # multi-arch native tree (virglrenderer, box64/box86-style proot, etc).
+    # Give it real headroom instead of the default 6h ceiling surprises.
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      # The repo's .gitmodules paths aren't always wired up as real gitlinks
+      # (e.g. after a re-init/re-push), so actions/checkout's submodule step
+      # can silently do nothing. Make sure every submodule path declared in
+      # .gitmodules is actually populated, cloning directly if it's missing
+      # or empty.
+      - name: Ensure native submodule sources are present
+        run: |
+          set -e
+          git config -f .gitmodules --get-regexp path | while read -r path_key path_value; do
+            name=$(echo "$path_key" | sed 's/^submodule\.//; s/\.path$//')
+            url=$(git config -f .gitmodules --get "submodule.$name.url")
+            if [ -d "$path_value" ] && [ -n "$(ls -A "$path_value" 2>/dev/null)" ]; then
+              echo "OK: $path_value already populated"
+              continue
+            fi
+            echo "Populating missing submodule '$name' -> $path_value from $url"
+            rm -rf "$path_value"
+            git clone --depth 1 --recurse-submodules "$url" "$path_value"
+          done
+
+      - name: Free up disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android/sdk/ndk \
+            /opt/ghc /opt/hostedtoolcache/CodeQL || true
+          df -h
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK & CMake
+        run: |
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager --install "ndk;27.0.12077973" "cmake;3.22.1"
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', 'gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      # imagefs/Proton assets are fetched by the Gradle build itself
+      # (see downloadImageFS / downloadProton tasks) - cache them across
+      # runs since they're large and rarely change.
+      - name: Cache downloaded runtime assets
+        uses: actions/cache@v4
+        with:
+          path: |
+            app/src/main/assets/imagefs.tar.zst
+            app/src/main/assets/proton-9.0-arm64ec.tar.zst
+          key: runtime-assets-${{ hashFiles('app/build.gradle') }}
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # gen_shader_header.sh (and other native build-time helper scripts)
+      # are invoked directly by CMake as executables. Git doesn't always
+      # preserve the +x bit through re-inits/re-uploads, so make sure it's
+      # set regardless of what's recorded in the tree.
+      - name: Grant execute permission for native build scripts
+        run: find app/src/main/cpp -name '*.sh' -exec chmod +x {} +
+
+      - name: Build debug APK
+        env:
+          ANDROID_NDK_HOME: ${{ env.ANDROID_SDK_ROOT }}/ndk/27.0.12077973
+        run: ./gradlew assembleDebug --stacktrace --no-daemon
+
+      - name: Locate APK
+        id: apk
+        run: |
+          APK_PATH=$(find app/build/outputs/apk -name '*.apk' | head -n 1)
+          echo "APK at: $APK_PATH"
+          echo "path=$APK_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: winlator-cmod-debug-apk
+          path: ${{ steps.apk.outputs.path }}
+          if-no-files-found: error
+          retention-days: 14
