@@ -158,22 +158,9 @@ public class DXVKConfigDialog extends ContentDialog {
                 String currentDXVKVersion = config.get("version");
 
                 if (!selectedVersion.equals("None")) {
-                    ArrayList<String> versions = new ArrayList<>();
-
-                    for (int i = 0; i < dxvkVersions.size(); i++) {
-                        Integer major = tryGetMajor(dxvkVersions.get(i));
-                        if (major != null && major < 2) {
-                            versions.add(dxvkVersions.get(i));
-                        }
-                    }
-
-                    dxvkVersions.removeAll(versions);
-
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.spinner_item_amoled, dxvkVersions);
-                    adapter.setDropDownViewResource(R.layout.spinner_dropdown_item_amoled);
-                    sDXVKVersion.setAdapter(adapter);
-                    sDXVKVersion.setPopupBackgroundResource(R.drawable.dialog_background_dark_blue);
-
+                    // Don't rebuild/strip the adapter here either — dxvkVersions already
+                    // holds the full list (built-in + installed). Just re-pick a default
+                    // selection that's DXVK 2+ when VKD3D is active.
                     Integer curMajor = tryGetMajor(currentDXVKVersion);
                     AppUtils.setSpinnerSelectionFromIdentifier(
                             sDXVKVersion,
@@ -295,22 +282,9 @@ public class DXVKConfigDialog extends ContentDialog {
         String selectedVersion = config.get("vkd3dVersion");
         String currentDXVKVersion = config.get("version");
         if (!selectedVersion.equals("None")) {
-            ArrayList<String> versions = new ArrayList<>();
-
-            for (int i = 0; i < dxvkVersions.size(); i++) {
-                Integer major = tryGetMajor(dxvkVersions.get(i));
-                if (major != null && major < 2) {
-                    versions.add(dxvkVersions.get(i));
-                }
-            }
-
-            dxvkVersions.removeAll(versions);
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.spinner_item_amoled, dxvkVersions);
-            adapter.setDropDownViewResource(R.layout.spinner_dropdown_item_amoled_compact);
-            sDXVKVersion.setAdapter(adapter);
-            configureContentSpinnerDropdown(sDXVKVersion);
-
+            // VKD3D needs DXVK 2+, but only pick a sensible *default selection* here —
+            // never remove entries from dxvkVersions, or every < 2.x build (including
+            // custom downloaded content) permanently disappears from the dropdown.
             Integer curMajor = tryGetMajor(currentDXVKVersion);
             AppUtils.setSpinnerSelectionFromIdentifier(
                     sDXVKVersion,
