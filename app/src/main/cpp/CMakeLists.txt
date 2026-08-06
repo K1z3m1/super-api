@@ -15,8 +15,13 @@ add_subdirectory(adrenotools)
 find_program(GLSLC
         NAMES glslc
         HINTS
+        "$ENV{ANDROID_NDK}/shader-tools/linux-x86_64"
+        "$ENV{ANDROID_NDK_HOME}/shader-tools/linux-x86_64"
         "$ENV{ANDROID_NDK}/shader-tools/darwin-x86_64"
         "$ENV{ANDROID_NDK_HOME}/shader-tools/darwin-x86_64"
+        "$ENV{ANDROID_NDK}/shader-tools/windows-x86_64"
+        "$ENV{ANDROID_NDK_HOME}/shader-tools/windows-x86_64"
+        "$ENV{ANDROID_SDK_ROOT}/ndk/27.0.12077973/shader-tools/linux-x86_64"
         "$ENV{ANDROID_SDK_ROOT}/ndk/29.0.14206865/shader-tools/darwin-x86_64"
         "$ENV{HOME}/Library/Android/sdk/ndk/29.0.14206865/shader-tools/darwin-x86_64"
 )
