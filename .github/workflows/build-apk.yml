@@ -32,6 +32,26 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      # The repo's .gitmodules paths aren't always wired up as real gitlinks
+      # (e.g. after a re-init/re-push), so actions/checkout's submodule step
+      # can silently do nothing. Make sure every submodule path declared in
+      # .gitmodules is actually populated, cloning directly if it's missing
+      # or empty.
+      - name: Ensure native submodule sources are present
+        run: |
+          set -e
+          git config -f .gitmodules --get-regexp path | while read -r path_key path_value; do
+            name=$(echo "$path_key" | sed 's/^submodule\.//; s/\.path$//')
+            url=$(git config -f .gitmodules --get "submodule.$name.url")
+            if [ -d "$path_value" ] && [ -n "$(ls -A "$path_value" 2>/dev/null)" ]; then
+              echo "OK: $path_value already populated"
+              continue
+            fi
+            echo "Populating missing submodule '$name' -> $path_value from $url"
+            rm -rf "$path_value"
+            git clone --depth 1 --recurse-submodules "$url" "$path_value"
+          done
+
       - name: Free up disk space
         run: |
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android/sdk/ndk \
