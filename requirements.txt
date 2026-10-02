@@ -1,7 +1,0 @@
-gradio==4.12.0
-pillow==10.1.0
-requests==2.31.0
-numpy==1.24.3
-flask==2.3.3
-pyngrok==7.0.0
-opencv-python==4.8.1.78  # <- เพิ่มบรรทัดนี้
